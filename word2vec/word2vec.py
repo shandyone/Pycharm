@@ -1,7 +1,7 @@
 #!/user/bin/python
 #coding:utf-8
-__author__ = 'yan.shi'
-from gensim.corpora import WikiCorpus
+__author__ = 'shandyone'
+from gensim.corpora import WikiCorpus#use wiki class to process related open
 import opencc
 import jieba
 import codecs
@@ -15,8 +15,8 @@ import multiprocessing
 def dataprocess():
     space=b' '
     i=0
-    output=open('E:\zhwiki-articles.txt','wb')
-    wiki=WikiCorpus('E:\zhwiki-latest-pages-articles.xml.bz2',lemmatize=False,dictionary={})
+    output=open('~/Pycharm/zhwiki/zhwiki-articles.txt','wb')
+    wiki=WikiCorpus('~/Pycharm/zhwiki/zhwiki-latest-pages-articles.xml.bz2',lemmatize=False,dictionary={})
     for text in wiki.get_texts():
         output.write(space.join(text)+b'\n')
         i=i+1
@@ -47,12 +47,12 @@ def isAlpha(word):
 opencc繁体转简体，jieba中文分词
 '''
 def trans_seg():
-    stopwords=createstoplist('E:\stopwords.txt')
+    stopwords=createstoplist('~/Pycharm/zhwiki/stopwords.txt')
     cc=opencc.OpenCC('t2s')
     i=0
-    with codecs.open('E:\zhwiki-segment.txt','w','utf-8') as wopen:
+    with codecs.open('~/Pycharm/zhwiki/zhwiki-segment.txt','w','utf-8') as wopen:
         print('开始...')
-        with codecs.open('E:\wiki-utf8.txt','r','utf-8') as ropen:
+        with codecs.open('~/Pycharm/zhwiki/wiki-utf8.txt','r','utf-8') as ropen:
             while True:
                 line=ropen.readline().strip()
                 i+=1
@@ -78,8 +78,8 @@ def trans_seg():
 '''
 def word2vec():
     print('Start...')
-    rawdata='G:\python workspace\zhwiki-segment.txt'
-    modelpath='G:\python workspace\modeldata.model'
+    rawdata='~/Pycharm/zhwiki/zhwiki-segment.txt'
+    modelpath='~\Pycharm\word2vec\model\modeldata.model'
     #vectorpath='E:\word2vec\vector'
     model=Word2Vec(LineSentence(rawdata),size=400,window=5,min_count=5,workers=multiprocessing.cpu_count())#参数说明，gensim函数库的Word2Vec的参数说明
     model.save(modelpath)
@@ -87,7 +87,7 @@ def word2vec():
     print("Finished!")
 
 def wordsimilarity():
-    model=Word2Vec.load('E:\word2vec\modeldata.model')
+    model=Word2Vec.load('~\Pycharm\word2vec\model\modeldata.model')
     semi=''
     try:
         semi=model.most_similar('日本'.decode('utf-8'),topn=10)#python3以上就不需要decode
