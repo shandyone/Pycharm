@@ -7,12 +7,12 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 mnist = input_data.read_data_sets("MNIST_data/", one_hot=False)
 
-learning_rate = 0.01
-training_epochs = 10
+learning_rate = 0.006
+training_epochs = 100
 batch_size = 256
 display_step = 1
 n_input = 784
-corruption_level=0.3
+corruption_level=0.25
 X = tf.placeholder("float", [None, n_input],name='X')
 mask = tf.placeholder("float", [None, n_input], name='mask')
 
@@ -95,4 +95,5 @@ with tf.Session() as sess:
     encoder_result = sess.run(encoder_op, feed_dict={X: batch_tx,mask:mask_np})
     plt.scatter(encoder_result[:, 0], encoder_result[:, 1], c=mnist.test.labels)
     plt.colorbar()
+    plt.savefig('test.png')
     plt.show()
