@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 import tensorflow as tf
+import numpy as np
 import matplotlib.pyplot as plt
 
 from tensorflow.examples.tutorials.mnist import input_data
@@ -11,7 +12,9 @@ training_epochs = 10
 batch_size = 256
 display_step = 1
 n_input = 784
-X = tf.placeholder("float", [None, n_input])
+corruption_level=0.3
+X = tf.placeholder("float", [None, n_input],name='X')
+mask = tf.placeholder("float", [None, n_input], name='mask')
 
 n_hidden_1 = 128
 n_hidden_2 = 64
@@ -39,8 +42,9 @@ biases = {
 }
 
 
-def encoder(x):
-    layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(x, weights['encoder_h1']),
+def encoder(x,mask):
+    mask_x = x*mask
+    layer_1 = tf.nn.sigmoid(tf.add(tf.matmul(mask_x, weights['encoder_h1']),
                                    biases['encoder_b1']))
     layer_2 = tf.nn.sigmoid(tf.add(tf.matmul(layer_1, weights['encoder_h2']),
                                    biases['encoder_b2']))
@@ -64,7 +68,7 @@ def decoder(x):
     return layer_4
 
 
-encoder_op = encoder(X)
+encoder_op = encoder(X,mask)
 decoder_op = decoder(encoder_op)
 
 y_pred = decoder_op
@@ -74,23 +78,21 @@ cost = tf.reduce_mean(tf.pow(y_true - y_pred, 2))
 optimizer = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
 with tf.Session() as sess:
-    # tf.initialize_all_variables() no long valid from
-    # 2017-03-02 if using tensorflow >= 0.12
-    if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
-        init = tf.initialize_all_variables()
-    else:
-        init = tf.global_variables_initializer()
+    init = tf.global_variables_initializer()
     sess.run(init)
     total_batch = int(mnist.train.num_examples / batch_size)
     for epoch in range(training_epochs):
         for i in range(total_batch):
             batch_xs, batch_ys = mnist.train.next_batch(batch_size)  # max(x) = 1, min(x) = 0
-            _, c = sess.run([optimizer, cost], feed_dict={X: batch_xs})
+            mask_np = np.random.binomial(1, 1 - corruption_level, batch_xs.shape)
+            _, c = sess.run([optimizer, cost], feed_dict={X: batch_xs,mask:mask_np})
         if epoch % display_step == 0:
-            print("Epoch:", '%04d' % (epoch + 1), "cost=", "{:.9f}".format(c))
+            print "Epoch:", '%04d' % (epoch + 1), "cost=", "{:.9f}".format(c)
     print("Optimization Finished!")
 
-    encoder_result = sess.run(encoder_op, feed_dict={X: mnist.test.images})
+    batch_tx = mnist.test.images
+    mask_np = np.random.binomial(1, 1 - corruption_level, batch_tx.shape)
+    encoder_result = sess.run(encoder_op, feed_dict={X: batch_tx,mask:mask_np})
     plt.scatter(encoder_result[:, 0], encoder_result[:, 1], c=mnist.test.labels)
     plt.colorbar()
     plt.show()
