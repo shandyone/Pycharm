@@ -19,7 +19,7 @@ sys.setdefaultencoding('utf-8')
 def dataprocess():
     space=b' '
     i=0
-    output=open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-articles.txt','wb')
+    output=open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-raw.txt','wb')
     wiki=WikiCorpus('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-latest-pages-articles.xml.bz2',lemmatize=False,dictionary={})
     for text in wiki.get_texts():
         output.write(space.join(text)+b'\n')
@@ -56,7 +56,7 @@ def trans_seg():
     i=0
     with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-segment.txt','w','utf-8') as wopen:
         print('开始...')
-        with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/wiki-utf8.txt','r','utf-8') as ropen:
+        with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-raw.txt','r','utf-8') as ropen:
             while True:
                 line=ropen.readline().strip()
                 i+=1
@@ -77,6 +77,37 @@ def trans_seg():
                 wopen.write(seg+'\n')
     print('结束!')
 
+
+def is_alpha(tok):
+    try:
+        #return tok.encode('ascii').isalpha()
+        return tok.encode('utf-8').isalpha()
+    except UnicodeEncodeError:
+        return False
+
+
+def zhwiki_segment():
+    i = 0
+    output = codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-segment.txt', 'w', encoding='utf-8')
+    print('Start...')
+    with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-t2s.txt', 'r', encoding='utf-8') as raw_input:
+        for line in raw_input.readlines():
+            line = line.strip()
+            i += 1
+            print('line ' + str(i))
+            text = line.split()
+            text = [w for w in text if not is_alpha(w)]
+
+            word_cut_seed = [jieba.cut(t) for t in text]
+            tmp = ''
+            for sent in word_cut_seed:
+                for tok in sent:
+                    tmp += tok + ' '
+            tmp = tmp.strip()
+            if tmp:
+                output.write(tmp + '\n')
+        output.close()
+
 '''
 利用gensim中的word2vec训练词向量
 '''
@@ -94,7 +125,7 @@ def wordsimilarity():
     model=Word2Vec.load('/home/shandyone/Pycharm/word2vec/model/modeldata.model')
     semi=''
     try:
-        semi=model.most_similar('日本'.decode('utf-8'),topn=10)#python3以上就不需要decode
+        semi=model.most_similar('足球'.decode('utf-8'),topn=10)#python3以上就不需要decode
     except KeyError:
         print('The word not in vocabulary!')
 
@@ -105,6 +136,7 @@ def wordsimilarity():
 
 if __name__=='__main__':
     #dataprocess()
-    trans_seg()
-    word2vec()
+    #trans_seg()
+    #zhwiki_segment()
+    #word2vec()
     wordsimilarity()
