@@ -9,14 +9,18 @@ from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
 import multiprocessing
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 '''
 读取中文wiki语料库，并解析提取xml中的内容
 '''
 def dataprocess():
     space=b' '
     i=0
-    output=open('~/Pycharm/zhwiki/zhwiki-articles.txt','wb')
-    wiki=WikiCorpus('~/Pycharm/zhwiki/zhwiki-latest-pages-articles.xml.bz2',lemmatize=False,dictionary={})
+    output=open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-articles.txt','wb')
+    wiki=WikiCorpus('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-latest-pages-articles.xml.bz2',lemmatize=False,dictionary={})
     for text in wiki.get_texts():
         output.write(space.join(text)+b'\n')
         i=i+1
@@ -47,12 +51,12 @@ def isAlpha(word):
 opencc繁体转简体，jieba中文分词
 '''
 def trans_seg():
-    stopwords=createstoplist('~/Pycharm/zhwiki/stopwords.txt')
+    stopwords=createstoplist('/home/shandyone/Pycharm/word2vec/zhwiki/stopwords.txt')
     cc=opencc.OpenCC('t2s')
     i=0
-    with codecs.open('~/Pycharm/zhwiki/zhwiki-segment.txt','w','utf-8') as wopen:
+    with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-segment.txt','w','utf-8') as wopen:
         print('开始...')
-        with codecs.open('~/Pycharm/zhwiki/wiki-utf8.txt','r','utf-8') as ropen:
+        with codecs.open('/home/shandyone/Pycharm/word2vec/zhwiki/wiki-utf8.txt','r','utf-8') as ropen:
             while True:
                 line=ropen.readline().strip()
                 i+=1
@@ -78,8 +82,8 @@ def trans_seg():
 '''
 def word2vec():
     print('Start...')
-    rawdata='~/Pycharm/zhwiki/zhwiki-segment.txt'
-    modelpath='~\Pycharm\word2vec\model\modeldata.model'
+    rawdata='/home/shandyone/Pycharm/word2vec/zhwiki/zhwiki-segment.txt'
+    modelpath='/home/shandyone/Pycharm/word2vec/model/modeldata.model'
     #vectorpath='E:\word2vec\vector'
     model=Word2Vec(LineSentence(rawdata),size=400,window=5,min_count=5,workers=multiprocessing.cpu_count())#参数说明，gensim函数库的Word2Vec的参数说明
     model.save(modelpath)
@@ -87,7 +91,7 @@ def word2vec():
     print("Finished!")
 
 def wordsimilarity():
-    model=Word2Vec.load('~\Pycharm\word2vec\model\modeldata.model')
+    model=Word2Vec.load('/home/shandyone/Pycharm/word2vec/model/modeldata.model')
     semi=''
     try:
         semi=model.most_similar('日本'.decode('utf-8'),topn=10)#python3以上就不需要decode
@@ -101,6 +105,6 @@ def wordsimilarity():
 
 if __name__=='__main__':
     #dataprocess()
-    #trans_seg()
-    #word2vec()
+    trans_seg()
+    word2vec()
     wordsimilarity()
