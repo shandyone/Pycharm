@@ -130,7 +130,7 @@ def train_lstm():
     plt.plot(list(),Y,color='b')
     plt.plot(list(),pred,color='r')
     plt.show()
-train_lstm()
+
 
 #-------------------prediction-----------------------------
 def prediction():
@@ -161,7 +161,10 @@ def prediction():
         plt.plot(data)
         plt.savefig("log_train.jpg")
         plt.show()
-prediction()
+
+if __name__=="__main__":
+    train_lstm()
+    prediction()
 
 '''
         saver.restore(sess,'stock.model')

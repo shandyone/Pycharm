@@ -1,0 +1,6 @@
+model_checkpoint_path: "stock2.model-199"
+all_model_checkpoint_paths: "stock2.model-119"
+all_model_checkpoint_paths: "stock2.model-139"
+all_model_checkpoint_paths: "stock2.model-159"
+all_model_checkpoint_paths: "stock2.model-179"
+all_model_checkpoint_paths: "stock2.model-199"
