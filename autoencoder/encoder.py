@@ -20,6 +20,7 @@ n_hidden_1 = 128
 n_hidden_2 = 64
 n_hidden_3 = 10
 n_hidden_4 = 2
+
 weights = {
     'encoder_h1': tf.Variable(tf.truncated_normal([n_input, n_hidden_1], )),
     'encoder_h2': tf.Variable(tf.truncated_normal([n_hidden_1, n_hidden_2], )),
@@ -50,7 +51,7 @@ def encoder(x,mask):
                                    biases['encoder_b2']))
     layer_3 = tf.nn.sigmoid(tf.add(tf.matmul(layer_2, weights['encoder_h3']),
                                    biases['encoder_b3']))
-    # 为了便于编码层的输出，编码层随后一层不使用激活函数
+    # for the output of code layer, we don`t use activation function
     layer_4 = tf.add(tf.matmul(layer_3, weights['encoder_h4']),
                      biases['encoder_b4'])
     return layer_4
@@ -69,6 +70,7 @@ def decoder(x):
 
 
 encoder_op = encoder(X,mask)
+#devide encoder process and decoder process to make some special issue
 decoder_op = decoder(encoder_op)
 
 y_pred = decoder_op
@@ -93,6 +95,7 @@ with tf.Session() as sess:
     batch_tx = mnist.test.images
     mask_np = np.random.binomial(1, 1 - corruption_level, batch_tx.shape)
     encoder_result = sess.run(encoder_op, feed_dict={X: batch_tx,mask:mask_np})
+    #at last, make this process to get these data
     plt.scatter(encoder_result[:, 0], encoder_result[:, 1], c=mnist.test.labels)
     plt.colorbar()
     plt.savefig('test.png')

@@ -144,7 +144,6 @@ def train_lstm():
             if (i+1) % 20==0:
                 #print ("save_model:",saver.save(sess,'./model/stock2.model',global_step=i))
                 print ("save_model:", saver.save(sess, '/model/stock2.model', global_step=i))
-train_lstm()
 
 
 def prediction():
@@ -179,8 +178,10 @@ def prediction():
         plt.plot(list(range(len(test_y))), test_y, color='r')
         plt.savefig('stock.jpg')
         plt.show()
-prediction()
 
+if __name__ == "__main__":
+    train_lstm()
+    prediction()
 '''
 def prediction():
     train_test=tf.constant(1)
