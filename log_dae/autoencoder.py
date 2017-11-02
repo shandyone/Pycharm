@@ -121,7 +121,7 @@ def test():
 if __name__ == '__main__':
     #train()
     test()
-# # 图像展示对比
+
 # f, a = plt.subplots(2, 10, figsize=(10, 2))
 # for i in range(examples_to_show):
 #     a[0][i].imshow(np.reshape(mnist.test.images[i], (28, 28)))
