@@ -17,7 +17,7 @@ batch_size = 10
 display_step = 1
 examples_to_show = 10
 time_step = 30
-corruption_level=0.1
+corruption_level=0.25
 
 def get_data():#if time_step is too long, the batch_index will be none
     #data = read_csv.data

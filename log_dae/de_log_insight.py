@@ -14,7 +14,7 @@ batch_size = 10
 display_step = 1 #which step to show the cost
 #n_input = 784
 n_input = 30
-corruption_level=0.1
+corruption_level=0.25
 time_step=30
 
 X = tf.placeholder("float", [None, time_step],name='X')
@@ -35,6 +35,7 @@ weights = {
     'decoder_h3': tf.Variable(tf.truncated_normal([n_hidden_2, n_hidden_1], 0.0,1.0)),
     'decoder_h4': tf.Variable(tf.truncated_normal([n_hidden_1, n_input], 0.0,1.0)),
 }
+
 biases = {
     'encoder_b1': tf.Variable(tf.random_normal([n_hidden_1])),
     'encoder_b2': tf.Variable(tf.random_normal([n_hidden_2])),
